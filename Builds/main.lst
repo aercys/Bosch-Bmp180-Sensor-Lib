@@ -1,0 +1,2112 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+ 119               	send_uart_char:
+ 121               	.Ltext1:
+   1:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** //
+   2:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** //  uart.c
+   3:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** //  BMP180
+   4:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** //
+   5:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** //  Created by Atakan ERCIYAS on 22/08/16.
+   6:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** //  Copyright © 2016 Atakan ERCIYAS. All rights reserved.
+   7:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** //
+   8:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** 
+   9:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** #include <stdio.h>
+  10:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** #include <avr/io.h>
+  11:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** 
+  12:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** static void send_uart_char(unsigned char serial_data, FILE *stream) {
+ 123               	.LM0:
+ 124               	.LFBB1:
+ 125 0000 CF93      		push r28
+ 126               	/* prologue: function */
+ 127               	/* frame size = 0 */
+ 128               	/* stack size = 1 */
+ 129               	.L__stack_usage = 1
+ 130 0002 C82F      		mov r28,r24
+  13:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     if (serial_data == '\n') { // Send each byte until reached \n character
+ 132               	.LM1:
+ 133 0004 8A30      		cpi r24,lo8(10)
+ 134 0006 01F4      		brne .L4
+  14:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****         send_uart_char('\r', stream);
+ 136               	.LM2:
+ 137 0008 8DE0      		ldi r24,lo8(13)
+ 138 000a 0E94 0000 		call send_uart_char
+ 139               	.L4:
+  15:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     }
+  16:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     
+  17:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     while (!(UCSR0A & (1 << UDRE0)));
+ 141               	.LM3:
+ 142 000e 8091 C000 		lds r24,192
+ 143 0012 85FF      		sbrs r24,5
+ 144 0014 00C0      		rjmp .L4
+  18:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     UDR0 = serial_data;
+ 146               	.LM4:
+ 147 0016 C093 C600 		sts 198,r28
+ 148               	/* epilogue start */
+  19:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** }
+ 150               	.LM5:
+ 151 001a CF91      		pop r28
+ 152 001c 0895      		ret
+ 154               	.Lscope1:
+ 156               	.global	init_twi
+ 158               	init_twi:
+ 160               	.Ltext2:
+   1:./i2c/i2c.c   **** //
+   2:./i2c/i2c.c   **** //  i2c.c
+   3:./i2c/i2c.c   **** //  BMP180
+   4:./i2c/i2c.c   **** //
+   5:./i2c/i2c.c   **** //  Created by Atakan ERCIYAS on 19/08/16.
+   6:./i2c/i2c.c   **** //  Copyright © 2016 Atakan ERCIYAS. All rights reserved.
+   7:./i2c/i2c.c   **** //
+   8:./i2c/i2c.c   **** 
+   9:./i2c/i2c.c   **** #include "i2c.h"
+  10:./i2c/i2c.c   **** #include <stdio.h>
+  11:./i2c/i2c.c   **** 
+  12:./i2c/i2c.c   **** void init_twi() {
+ 162               	.LM6:
+ 163               	.LFBB2:
+ 164               	/* prologue: function */
+ 165               	/* frame size = 0 */
+ 166               	/* stack size = 0 */
+ 167               	.L__stack_usage = 0
+  13:./i2c/i2c.c   ****     
+  14:./i2c/i2c.c   ****     // SCL Freq = CPU_CLK / (16 + 2 x (TWBR).(PrescalerValue))
+  15:./i2c/i2c.c   ****     // TWI clock frequency set 100.00kHz to work @8MHz Cpu Frequency
+  16:./i2c/i2c.c   ****     TWSR = 0x00; // Prescaler 1
+ 169               	.LM7:
+ 170 001e 1092 B900 		sts 185,__zero_reg__
+  17:./i2c/i2c.c   ****     TWBR = 0x20; // Decimal 32
+ 172               	.LM8:
+ 173 0022 80E2      		ldi r24,lo8(32)
+ 174 0024 8093 B800 		sts 184,r24
+ 175 0028 0895      		ret
+ 177               	.Lscope2:
+ 178               		.section	.rodata.str1.1,"aMS",@progbits,1
+ 179               	.LC0:
+ 180 0000 5B49 6E66 		.string	"[Info]\tStart condition send & waiting for ack... "
+ 180      6F5D 0953 
+ 180      7461 7274 
+ 180      2063 6F6E 
+ 180      6469 7469 
+ 181               	.LC1:
+ 182 0032 5B53 7563 		.string	"[Success]\tAck has been received."
+ 182      6365 7373 
+ 182      5D09 4163 
+ 182      6B20 6861 
+ 182      7320 6265 
+ 183               		.text
+ 185               	.global	start_transmission
+ 187               	start_transmission:
+  18:./i2c/i2c.c   **** }
+  19:./i2c/i2c.c   **** 
+  20:./i2c/i2c.c   **** void start_transmission() {
+ 189               	.LM9:
+ 190               	.LFBB3:
+ 191               	/* prologue: function */
+ 192               	/* frame size = 0 */
+ 193               	/* stack size = 0 */
+ 194               	.L__stack_usage = 0
+  21:./i2c/i2c.c   ****     TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
+ 196               	.LM10:
+ 197 002a 84EA      		ldi r24,lo8(-92)
+ 198 002c 8093 BC00 		sts 188,r24
+  22:./i2c/i2c.c   ****     if (i2cdebug)
+ 200               	.LM11:
+ 201 0030 8091 0000 		lds r24,i2cdebug
+ 202 0034 8823      		tst r24
+ 203 0036 01F0      		breq .L10
+  23:./i2c/i2c.c   ****         printf("[Info]\tStart condition send & waiting for ack... \n");
+ 205               	.LM12:
+ 206 0038 80E0      		ldi r24,lo8(.LC0)
+ 207 003a 90E0      		ldi r25,hi8(.LC0)
+ 208 003c 0E94 0000 		call puts
+ 209               	.L10:
+  24:./i2c/i2c.c   ****     while(!(TWCR & (1<<TWINT)));
+ 211               	.LM13:
+ 212 0040 8091 BC00 		lds r24,188
+ 213 0044 87FF      		sbrs r24,7
+ 214 0046 00C0      		rjmp .L10
+ 215               	.L12:
+  25:./i2c/i2c.c   ****     while((TWSR & 0xF8)!= TWI_START_SENT);
+ 217               	.LM14:
+ 218 0048 8091 B900 		lds r24,185
+ 219 004c 887F      		andi r24,lo8(-8)
+ 220 004e 8830      		cpi r24,lo8(8)
+ 221 0050 01F4      		brne .L12
+  26:./i2c/i2c.c   ****     if (i2cdebug)
+ 223               	.LM15:
+ 224 0052 8091 0000 		lds r24,i2cdebug
+ 225 0056 8823      		tst r24
+ 226 0058 01F0      		breq .L7
+  27:./i2c/i2c.c   ****         printf("[Success]\tAck has been received.\n");
+ 228               	.LM16:
+ 229 005a 80E0      		ldi r24,lo8(.LC1)
+ 230 005c 90E0      		ldi r25,hi8(.LC1)
+ 231 005e 0C94 0000 		jmp puts
+ 232               	.L7:
+ 233 0062 0895      		ret
+ 235               	.Lscope3:
+ 236               		.section	.rodata.str1.1
+ 237               	.LC2:
+ 238 0053 5B49 6E66 		.string	"[Info]\tTransmission has been ended."
+ 238      6F5D 0954 
+ 238      7261 6E73 
+ 238      6D69 7373 
+ 238      696F 6E20 
+ 239               		.text
+ 241               	.global	end_transmission
+ 243               	end_transmission:
+  28:./i2c/i2c.c   **** }
+  29:./i2c/i2c.c   **** 
+  30:./i2c/i2c.c   **** void end_transmission() {
+ 245               	.LM17:
+ 246               	.LFBB4:
+ 247               	/* prologue: function */
+ 248               	/* frame size = 0 */
+ 249               	/* stack size = 0 */
+ 250               	.L__stack_usage = 0
+  31:./i2c/i2c.c   ****     TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+ 252               	.LM18:
+ 253 0064 84E9      		ldi r24,lo8(-108)
+ 254 0066 8093 BC00 		sts 188,r24
+  32:./i2c/i2c.c   ****     if (i2cdebug)
+ 256               	.LM19:
+ 257 006a 8091 0000 		lds r24,i2cdebug
+ 258 006e 8823      		tst r24
+ 259 0070 01F0      		breq .L17
+  33:./i2c/i2c.c   ****         printf("[Info]\tTransmission has been ended.\n");
+ 261               	.LM20:
+ 262 0072 80E0      		ldi r24,lo8(.LC2)
+ 263 0074 90E0      		ldi r25,hi8(.LC2)
+ 264 0076 0C94 0000 		jmp puts
+ 265               	.L17:
+ 266 007a 0895      		ret
+ 268               	.Lscope4:
+ 269               		.section	.rodata.str1.1
+ 270               	.LC3:
+ 271 0077 5B49 6E66 		.string	"[Info]\tAddress %#02x has been sent. Waiting for ack... \n"
+ 271      6F5D 0941 
+ 271      6464 7265 
+ 271      7373 2025 
+ 271      2330 3278 
+ 272               	.LC4:
+ 273 00b0 5B53 7563 		.string	"[Success]\tAck has been received. "
+ 273      6365 7373 
+ 273      5D09 4163 
+ 273      6B20 6861 
+ 273      7320 6265 
+ 274               		.text
+ 277               	.global	send_addr
+ 279               	send_addr:
+  34:./i2c/i2c.c   **** }
+  35:./i2c/i2c.c   **** 
+  36:./i2c/i2c.c   **** void send_addr(uint8_t addr) {
+ 281               	.LM21:
+ 282               	.LFBB5:
+ 283               	/* prologue: function */
+ 284               	/* frame size = 0 */
+ 285               	/* stack size = 0 */
+ 286               	.L__stack_usage = 0
+  37:./i2c/i2c.c   ****     TWDR = addr;
+ 288               	.LM22:
+ 289 007c 8093 BB00 		sts 187,r24
+  38:./i2c/i2c.c   ****     TWCR = (1<<TWINT) | (1<<TWEN);
+ 291               	.LM23:
+ 292 0080 94E8      		ldi r25,lo8(-124)
+ 293 0082 9093 BC00 		sts 188,r25
+  39:./i2c/i2c.c   ****     if (i2cdebug)
+ 295               	.LM24:
+ 296 0086 9091 0000 		lds r25,i2cdebug
+ 297 008a 9923      		tst r25
+ 298 008c 01F0      		breq .L22
+  40:./i2c/i2c.c   ****         printf("[Info]\tAddress %#02x has been sent. Waiting for ack... \n", addr);
+ 300               	.LM25:
+ 301 008e 1F92      		push __zero_reg__
+ 302 0090 8F93      		push r24
+ 303 0092 80E0      		ldi r24,lo8(.LC3)
+ 304 0094 90E0      		ldi r25,hi8(.LC3)
+ 305 0096 9F93      		push r25
+ 306 0098 8F93      		push r24
+ 307 009a 0E94 0000 		call printf
+ 308 009e 0F90      		pop __tmp_reg__
+ 309 00a0 0F90      		pop __tmp_reg__
+ 310 00a2 0F90      		pop __tmp_reg__
+ 311 00a4 0F90      		pop __tmp_reg__
+ 312               	.L22:
+  41:./i2c/i2c.c   ****     while(!(TWCR & (1<<TWINT)));
+ 314               	.LM26:
+ 315 00a6 8091 BC00 		lds r24,188
+ 316 00aa 87FF      		sbrs r24,7
+ 317 00ac 00C0      		rjmp .L22
+  42:./i2c/i2c.c   ****     if (TWI_SLAVE_W_ACK != (TWSR & 0xF8) && TWI_SLAVE_R_ACK != (TWSR & 0xF8))
+ 319               	.LM27:
+ 320 00ae 8091 B900 		lds r24,185
+ 321 00b2 887F      		andi r24,lo8(-8)
+ 322 00b4 8831      		cpi r24,lo8(24)
+ 323 00b6 01F0      		breq .L23
+ 325               	.LM28:
+ 326 00b8 8091 B900 		lds r24,185
+ 327 00bc 887F      		andi r24,lo8(-8)
+ 328 00be 8034      		cpi r24,lo8(64)
+ 329 00c0 01F4      		brne .L19
+ 330               	.L23:
+ 331               	.LBB22:
+ 332               	.LBB23:
+  43:./i2c/i2c.c   ****         terminate();
+  44:./i2c/i2c.c   ****     else if (i2cdebug)
+ 334               	.LM29:
+ 335 00c2 8091 0000 		lds r24,i2cdebug
+ 336 00c6 8823      		tst r24
+ 337 00c8 01F0      		breq .L19
+  45:./i2c/i2c.c   ****         printf("[Success]\tAck has been received. \n");
+ 339               	.LM30:
+ 340 00ca 80E0      		ldi r24,lo8(.LC4)
+ 341 00cc 90E0      		ldi r25,hi8(.LC4)
+ 342 00ce 0C94 0000 		jmp puts
+ 343               	.L19:
+ 344 00d2 0895      		ret
+ 345               	.LBE23:
+ 346               	.LBE22:
+ 348               	.Lscope5:
+ 349               		.section	.rodata.str1.1
+ 350               	.LC5:
+ 351 00d2 5B49 6E66 		.string	"[Info]\tSending data (%#02x).\n"
+ 351      6F5D 0953 
+ 351      656E 6469 
+ 351      6E67 2064 
+ 351      6174 6120 
+ 352               	.LC6:
+ 353 00f0 5B53 7563 		.string	"[Success]\tData sent. Waiting for ack... "
+ 353      6365 7373 
+ 353      5D09 4461 
+ 353      7461 2073 
+ 353      656E 742E 
+ 354               		.text
+ 357               	.global	send_data
+ 359               	send_data:
+  46:./i2c/i2c.c   ****     
+  47:./i2c/i2c.c   **** }
+  48:./i2c/i2c.c   **** 
+  49:./i2c/i2c.c   **** void send_data(uint8_t data) {
+ 361               	.LM31:
+ 362               	.LFBB6:
+ 363               	/* prologue: function */
+ 364               	/* frame size = 0 */
+ 365               	/* stack size = 0 */
+ 366               	.L__stack_usage = 0
+  50:./i2c/i2c.c   ****     TWDR = data;
+ 368               	.LM32:
+ 369 00d4 8093 BB00 		sts 187,r24
+  51:./i2c/i2c.c   ****     if (i2cdebug)
+ 371               	.LM33:
+ 372 00d8 9091 0000 		lds r25,i2cdebug
+ 373 00dc 9923      		tst r25
+ 374 00de 01F0      		breq .L35
+  52:./i2c/i2c.c   ****         printf("[Info]\tSending data (%#02x).\n", data);
+ 376               	.LM34:
+ 377 00e0 1F92      		push __zero_reg__
+ 378 00e2 8F93      		push r24
+ 379 00e4 80E0      		ldi r24,lo8(.LC5)
+ 380 00e6 90E0      		ldi r25,hi8(.LC5)
+ 381 00e8 9F93      		push r25
+ 382 00ea 8F93      		push r24
+ 383 00ec 0E94 0000 		call printf
+ 384 00f0 0F90      		pop __tmp_reg__
+ 385 00f2 0F90      		pop __tmp_reg__
+ 386 00f4 0F90      		pop __tmp_reg__
+ 387 00f6 0F90      		pop __tmp_reg__
+ 388               	.L35:
+  53:./i2c/i2c.c   ****     TWCR = (1<<TWINT) | (1<<TWEN);
+ 390               	.LM35:
+ 391 00f8 84E8      		ldi r24,lo8(-124)
+ 392 00fa 8093 BC00 		sts 188,r24
+ 393               	.L37:
+  54:./i2c/i2c.c   ****     while(!(TWCR & (1<<TWINT)));
+ 395               	.LM36:
+ 396 00fe 8091 BC00 		lds r24,188
+ 397 0102 87FF      		sbrs r24,7
+ 398 0104 00C0      		rjmp .L37
+  55:./i2c/i2c.c   ****     if (i2cdebug)
+ 400               	.LM37:
+ 401 0106 8091 0000 		lds r24,i2cdebug
+ 402 010a 8823      		tst r24
+ 403 010c 01F0      		breq .L38
+  56:./i2c/i2c.c   ****         printf("[Success]\tData sent. Waiting for ack... \n");
+ 405               	.LM38:
+ 406 010e 80E0      		ldi r24,lo8(.LC6)
+ 407 0110 90E0      		ldi r25,hi8(.LC6)
+ 408 0112 0E94 0000 		call puts
+ 409               	.L38:
+  57:./i2c/i2c.c   ****     if (TWI_DATA_SENT_ACK != (TWSR & 0xF8))
+ 411               	.LM39:
+ 412 0116 8091 B900 		lds r24,185
+ 413 011a 887F      		andi r24,lo8(-8)
+ 414 011c 8832      		cpi r24,lo8(40)
+ 415 011e 01F4      		brne .L34
+ 416               	.LBB26:
+ 417               	.LBB27:
+  58:./i2c/i2c.c   ****         terminate();
+  59:./i2c/i2c.c   ****     else if (i2cdebug)
+ 419               	.LM40:
+ 420 0120 8091 0000 		lds r24,i2cdebug
+ 421 0124 8823      		tst r24
+ 422 0126 01F0      		breq .L34
+  60:./i2c/i2c.c   ****         printf("[Success]\tAck has been received.\n");
+ 424               	.LM41:
+ 425 0128 80E0      		ldi r24,lo8(.LC1)
+ 426 012a 90E0      		ldi r25,hi8(.LC1)
+ 427 012c 0C94 0000 		jmp puts
+ 428               	.L34:
+ 429 0130 0895      		ret
+ 430               	.LBE27:
+ 431               	.LBE26:
+ 433               	.Lscope6:
+ 434               		.section	.rodata.str1.1
+ 435               	.LC7:
+ 436 0119 5B49 6E66 		.string	"[Info]\tReading data..."
+ 436      6F5D 0952 
+ 436      6561 6469 
+ 436      6E67 2064 
+ 436      6174 612E 
+ 437               	.LC8:
+ 438 0130 5B53 7563 		.string	"[Success]\tData (%#02x) has been read successfuly.\n"
+ 438      6365 7373 
+ 438      5D09 4461 
+ 438      7461 2028 
+ 438      2523 3032 
+ 439               		.text
+ 442               	.global	read_data
+ 444               	read_data:
+  61:./i2c/i2c.c   ****     
+  62:./i2c/i2c.c   **** }
+  63:./i2c/i2c.c   **** 
+  64:./i2c/i2c.c   **** uint8_t read_data(short ack) {
+ 446               	.LM42:
+ 447               	.LFBB7:
+ 448 0132 CF93      		push r28
+ 449 0134 DF93      		push r29
+ 450               	/* prologue: function */
+ 451               	/* frame size = 0 */
+ 452               	/* stack size = 2 */
+ 453               	.L__stack_usage = 2
+ 454 0136 EC01      		movw r28,r24
+  65:./i2c/i2c.c   ****     if (i2cdebug)
+ 456               	.LM43:
+ 457 0138 8091 0000 		lds r24,i2cdebug
+ 458 013c 8823      		tst r24
+ 459 013e 01F0      		breq .L50
+  66:./i2c/i2c.c   ****         printf("[Info]\tReading data...\n");
+ 461               	.LM44:
+ 462 0140 80E0      		ldi r24,lo8(.LC7)
+ 463 0142 90E0      		ldi r25,hi8(.LC7)
+ 464 0144 0E94 0000 		call puts
+ 465               	.L50:
+  67:./i2c/i2c.c   ****     if (!ack)
+ 467               	.LM45:
+ 468 0148 CD2B      		or r28,r29
+ 469 014a 01F4      		brne .L51
+  68:./i2c/i2c.c   ****         TWCR = (1<<TWINT) | (1<<TWEN);
+ 471               	.LM46:
+ 472 014c 84E8      		ldi r24,lo8(-124)
+ 473 014e 00C0      		rjmp .L62
+ 474               	.L51:
+  69:./i2c/i2c.c   ****     else
+  70:./i2c/i2c.c   ****         TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWEA);
+ 476               	.LM47:
+ 477 0150 84EC      		ldi r24,lo8(-60)
+ 478               	.L62:
+ 479 0152 8093 BC00 		sts 188,r24
+ 480               	.L54:
+  71:./i2c/i2c.c   ****     
+  72:./i2c/i2c.c   ****     while(!(TWCR & (1<<TWINT)));
+ 482               	.LM48:
+ 483 0156 8091 BC00 		lds r24,188
+ 484 015a 87FF      		sbrs r24,7
+ 485 015c 00C0      		rjmp .L54
+  73:./i2c/i2c.c   ****     //if (TWI_DATA_RECV_ACK != (TWSR & 0xF8))
+  74:./i2c/i2c.c   ****         //terminate();
+  75:./i2c/i2c.c   ****     
+  76:./i2c/i2c.c   ****     if (i2cdebug)
+ 487               	.LM49:
+ 488 015e 8091 0000 		lds r24,i2cdebug
+ 489 0162 8823      		tst r24
+ 490 0164 01F0      		breq .L55
+  77:./i2c/i2c.c   ****         printf("[Success]\tData (%#02x) has been read successfuly.\n", TWDR);
+ 492               	.LM50:
+ 493 0166 8091 BB00 		lds r24,187
+ 494 016a 1F92      		push __zero_reg__
+ 495 016c 8F93      		push r24
+ 496 016e 80E0      		ldi r24,lo8(.LC8)
+ 497 0170 90E0      		ldi r25,hi8(.LC8)
+ 498 0172 9F93      		push r25
+ 499 0174 8F93      		push r24
+ 500 0176 0E94 0000 		call printf
+ 501 017a 0F90      		pop __tmp_reg__
+ 502 017c 0F90      		pop __tmp_reg__
+ 503 017e 0F90      		pop __tmp_reg__
+ 504 0180 0F90      		pop __tmp_reg__
+ 505               	.L55:
+  78:./i2c/i2c.c   ****     return TWDR;
+ 507               	.LM51:
+ 508 0182 8091 BB00 		lds r24,187
+ 509               	/* epilogue start */
+  79:./i2c/i2c.c   ****     
+  80:./i2c/i2c.c   **** }
+ 511               	.LM52:
+ 512 0186 DF91      		pop r29
+ 513 0188 CF91      		pop r28
+ 514 018a 0895      		ret
+ 516               	.Lscope7:
+ 518               	.global	restart
+ 520               	restart:
+  81:./i2c/i2c.c   **** 
+  82:./i2c/i2c.c   **** void restart(void)
+  83:./i2c/i2c.c   **** {
+ 522               	.LM53:
+ 523               	.LFBB8:
+ 524               	/* prologue: function */
+ 525               	/* frame size = 0 */
+ 526               	/* stack size = 0 */
+ 527               	.L__stack_usage = 0
+  84:./i2c/i2c.c   ****     // Clear TWI interrupt flag, Put start condition on SDA, Enable TWI
+  85:./i2c/i2c.c   ****     TWCR= (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+ 529               	.LM54:
+ 530 018c 84EA      		ldi r24,lo8(-92)
+ 531 018e 8093 BC00 		sts 188,r24
+ 532               	.L65:
+  86:./i2c/i2c.c   ****     while(!(TWCR & (1<<TWINT))); // wait till restart condition is transmitted
+ 534               	.LM55:
+ 535 0192 8091 BC00 		lds r24,188
+ 536 0196 87FF      		sbrs r24,7
+ 537 0198 00C0      		rjmp .L65
+ 538               	.L67:
+  87:./i2c/i2c.c   ****     while((TWSR & 0xF8)!= TWI_R_START_SENT); // Check for the acknoledgement
+ 540               	.LM56:
+ 541 019a 8091 B900 		lds r24,185
+ 542 019e 887F      		andi r24,lo8(-8)
+ 543 01a0 8031      		cpi r24,lo8(16)
+ 544 01a2 01F4      		brne .L67
+ 545               	/* epilogue start */
+  88:./i2c/i2c.c   **** }
+ 547               	.LM57:
+ 548 01a4 0895      		ret
+ 550               	.Lscope8:
+ 552               	.global	debug
+ 554               	debug:
+  89:./i2c/i2c.c   **** 
+  90:./i2c/i2c.c   **** void debug(short cond) {
+ 556               	.LM58:
+ 557               	.LFBB9:
+ 558               	/* prologue: function */
+ 559               	/* frame size = 0 */
+ 560               	/* stack size = 0 */
+ 561               	.L__stack_usage = 0
+  91:./i2c/i2c.c   ****     i2cdebug = cond;
+ 563               	.LM59:
+ 564 01a6 8093 0000 		sts i2cdebug,r24
+ 565 01aa 0895      		ret
+ 567               	.Lscope9:
+ 569               	.global	terminate
+ 571               	terminate:
+  92:./i2c/i2c.c   **** }
+  93:./i2c/i2c.c   **** void terminate() {
+ 573               	.LM60:
+ 574               	.LFBB10:
+ 575               	/* prologue: function */
+ 576               	/* frame size = 0 */
+ 577               	/* stack size = 0 */
+ 578               	.L__stack_usage = 0
+ 579 01ac 0895      		ret
+ 581               	.Lscope10:
+ 582               	.global	__floatsisf
+ 583               	.global	__divsf3
+ 584               	.global	__subsf3
+ 585               	.global	__mulsf3
+ 587               	.global	calculate_altitude
+ 589               	calculate_altitude:
+ 591               	.Ltext3:
+   1:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** //
+   2:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** //  bmp180.c
+   3:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** //  BMP180
+   4:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** //
+   5:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** //  Created by Atakan ERCIYAS on 18/08/16.
+   6:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** //  Copyright © 2016 Atakan ERCIYAS. All rights reserved.
+   7:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** //
+   8:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** #include <math.h>
+   9:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** #include "bmp180.h"
+  10:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** #include "i2c/i2c.c"
+  11:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  12:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** bmp180 bmp_180;
+  13:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  14:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  15:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void init_sensor(short mode) {
+  16:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     read_coeffs();
+  17:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.mode = mode;
+  18:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+  19:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  20:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void calculate_temperature() {
+  21:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     long UT, X1, X2, B5;
+  22:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     UT = read_temperature();
+  23:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (UT - bmp_180.calib_coeffs.AC6) * bmp_180.calib_coeffs.AC5 / pow(2, 15);
+  24:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = bmp_180.calib_coeffs.MC * pow(2, 11) / (X1 + bmp_180.calib_coeffs.MD);
+  25:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B5 = X1 + X2;
+  26:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.B5 = B5;
+  27:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.temperature = (B5 + 8) / pow(2, 4);
+  28:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+  29:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  30:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void calculate_pressure() {
+  31:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     long UP, X1, X2, X3, B3, B6, _pressure;
+  32:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     unsigned long B4, B7;
+  33:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     UP = read_pressure();
+  34:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B6 = bmp_180.calib_coeffs.B5 - 4000;
+  35:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (bmp_180.calib_coeffs.B2 * (B6 * B6 >> 12)) >> 11;
+  36:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = bmp_180.calib_coeffs.AC2 * B6 >> 11;
+  37:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X3 = X1 + X2;
+  38:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B3 = ((((long)bmp_180.calib_coeffs.AC1 * 4 + X3) << bmp_180.mode) + 2) / 4;
+  39:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = bmp_180.calib_coeffs.AC3 * B6 >> 13;
+  40:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = (bmp_180.calib_coeffs.B1 * (B6 * B6 >> 12)) >> 16;
+  41:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X3 = ((X1 + X2) + 2) >> 2;
+  42:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B4 = bmp_180.calib_coeffs.AC4 * (unsigned long) (X3 + 32768) >> 15;
+  43:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B7 = ((unsigned long) UP - B3) * (50000UL >> bmp_180.mode);
+  44:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     if (B7 < 0x80000000UL)
+  45:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         _pressure = (B7 * 2) / B4;
+  46:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     else
+  47:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         _pressure = (B7 / B4) * 2;
+  48:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (_pressure >> 8) * (_pressure >> 8);
+  49:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (X1 * 3038) >> 16;
+  50:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = (-7357 * _pressure) >> 16;
+  51:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.pressure = _pressure + ((X1 + X2 + 3791) >> 4);
+  52:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+  53:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  54:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void calculate_altitude() {
+ 593               	.LM61:
+ 594               	.LFBB11:
+ 595               	/* prologue: function */
+ 596               	/* frame size = 0 */
+ 597               	/* stack size = 0 */
+ 598               	.L__stack_usage = 0
+  55:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.altitude = (float) 44330 * (1 - pow(((float) bmp_180.pressure / pressure_sea_level), 0.
+ 600               	.LM62:
+ 601 01ae 6091 0000 		lds r22,bmp_180+14
+ 602 01b2 7091 0000 		lds r23,bmp_180+14+1
+ 603 01b6 8091 0000 		lds r24,bmp_180+14+2
+ 604 01ba 9091 0000 		lds r25,bmp_180+14+3
+ 605 01be 0E94 0000 		call __floatsisf
+ 606 01c2 20E8      		ldi r18,lo8(-128)
+ 607 01c4 36EE      		ldi r19,lo8(-26)
+ 608 01c6 45EC      		ldi r20,lo8(-59)
+ 609 01c8 57E4      		ldi r21,lo8(71)
+ 610 01ca 0E94 0000 		call __divsf3
+ 611 01ce 21E0      		ldi r18,lo8(1)
+ 612 01d0 3EED      		ldi r19,lo8(-34)
+ 613 01d2 42E4      		ldi r20,lo8(66)
+ 614 01d4 5EE3      		ldi r21,lo8(62)
+ 615 01d6 0E94 0000 		call pow
+ 616 01da 9B01      		movw r18,r22
+ 617 01dc AC01      		movw r20,r24
+ 618 01de 60E0      		ldi r22,0
+ 619 01e0 70E0      		ldi r23,0
+ 620 01e2 80E8      		ldi r24,lo8(-128)
+ 621 01e4 9FE3      		ldi r25,lo8(63)
+ 622 01e6 0E94 0000 		call __subsf3
+ 623 01ea 20E0      		ldi r18,0
+ 624 01ec 3AE2      		ldi r19,lo8(42)
+ 625 01ee 4DE2      		ldi r20,lo8(45)
+ 626 01f0 57E4      		ldi r21,lo8(71)
+ 627 01f2 0E94 0000 		call __mulsf3
+ 628 01f6 6093 0000 		sts bmp_180+18,r22
+ 629 01fa 7093 0000 		sts bmp_180+18+1,r23
+ 630 01fe 8093 0000 		sts bmp_180+18+2,r24
+ 631 0202 9093 0000 		sts bmp_180+18+3,r25
+ 632 0206 0895      		ret
+ 634               	.Lscope11:
+ 636               	.global	read_temperature
+ 638               	read_temperature:
+  56:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+  57:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  58:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** long read_temperature() {
+ 640               	.LM63:
+ 641               	.LFBB12:
+ 642 0208 CF93      		push r28
+ 643 020a DF93      		push r29
+ 644               	/* prologue: function */
+ 645               	/* frame size = 0 */
+ 646               	/* stack size = 2 */
+ 647               	.L__stack_usage = 2
+  59:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     short _temperature;
+  60:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+  61:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     start_transmission();
+ 649               	.LM64:
+ 650 020c 0E94 0000 		call start_transmission
+  62:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_write_addr);
+ 652               	.LM65:
+ 653 0210 8EEE      		ldi r24,lo8(-18)
+ 654 0212 0E94 0000 		call send_addr
+  63:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(control_reg_addr);
+ 656               	.LM66:
+ 657 0216 84EF      		ldi r24,lo8(-12)
+ 658 0218 0E94 0000 		call send_data
+  64:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(temperature_sel);
+ 660               	.LM67:
+ 661 021c 8EE2      		ldi r24,lo8(46)
+ 662 021e 0E94 0000 		call send_data
+  65:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     end_transmission();
+ 664               	.LM68:
+ 665 0222 0E94 0000 		call end_transmission
+ 666               	.LBB28:
+ 667               	.LBB29:
+ 669               	.Ltext4:
+   1:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    All rights reserved.
+   5:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+   6:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+   9:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  12:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****      distribution.
+  16:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  17:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  21:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  33:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** /* $Id$ */
+  34:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  35:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  38:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #ifndef __HAS_DELAY_CYCLES
+  39:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #define __HAS_DELAY_CYCLES 1
+  40:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #endif
+  41:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  42:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #include <inttypes.h>
+  43:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #include <util/delay_basic.h>
+  44:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #include <math.h>
+  45:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  46:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** /** \file */
+  47:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  48:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     \code
+  49:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  50:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  51:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     #include <util/delay.h>
+  52:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     \endcode
+  53:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  54:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  55:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  56:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  57:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     used.
+  58:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  59:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  60:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  61:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  62:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  63:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  64:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  65:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  66:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  67:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  68:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  69:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  70:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  71:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  72:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  73:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  74:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  75:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     routines linked into the application.
+  76:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  77:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  78:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  79:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  80:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  81:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** */
+  82:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  83:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  84:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  85:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  86:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #endif
+  87:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  88:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #ifndef F_CPU
+  89:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  90:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  91:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** # define F_CPU 1000000UL
+  92:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #endif
+  93:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  94:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+  95:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+  96:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #endif
+  97:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+  98:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+  99:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 100:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 101:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #  include <math.h>
+ 102:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #endif
+ 103:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 104:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** /**
+ 105:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    \ingroup util_delay
+ 106:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 107:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+ 108:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 109:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+ 110:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 111:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 112:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 113:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 114:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 115:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 116:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 117:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 118:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 119:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 120:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    If the avr-gcc toolchain has __builtin_avr_delay_cycles(unsigned long)
+ 121:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    support, maximal possible delay is 4294967.295 ms/ F_CPU in MHz. For
+ 122:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    values greater than the maximal possible delay, overflows results in
+ 123:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    no delay i.e., 0ms.
+ 124:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 125:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Conversion of __us into clock cycles may not always result in integer.
+ 126:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    By default, the clock cycles rounded up to next integer. This ensures that
+ 127:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    the user gets atleast __us microseconds of delay.
+ 128:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 129:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Alternatively, user can define __DELAY_ROUND_DOWN__ and __DELAY_ROUND_CLOSEST__
+ 130:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    to round down and round to closest integer.
+ 131:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 132:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Note: The new implementation of _delay_ms(double __ms) with 
+ 133:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****     __builtin_avr_delay_cycles(unsigned long) support is not backward compatible. 
+ 134:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    User can define __DELAY_BACKWARD_COMPATIBLE__ to get a backward compatible delay.
+ 135:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    Also, the backward compatible
+ 136:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    algorithm will be chosen if the code is compiled in a <em>freestanding
+ 137:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    environment</em> (GCC option \c -ffreestanding), as the math functions
+ 138:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****    required for rounding are not available to the compiler then.
+ 139:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 140:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****  */
+ 141:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** void
+ 142:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** _delay_ms(double __ms)
+ 143:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** {
+ 144:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	double __tmp ; 
+ 145:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+ 146:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 147:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 148:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	uint32_t __ticks_dc;
+ 149:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	extern void __builtin_avr_delay_cycles(unsigned long);
+ 150:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 1e3) * __ms;
+ 151:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 152:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	#if defined(__DELAY_ROUND_DOWN__)
+ 153:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)fabs(__tmp);
+ 154:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 155:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	#elif defined(__DELAY_ROUND_CLOSEST__)
+ 156:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(fabs(__tmp)+0.5);
+ 157:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 158:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	#else
+ 159:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 		//round up by default
+ 160:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+ 161:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	#endif
+ 162:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 
+ 163:/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h **** 	__builtin_avr_delay_cycles(__ticks_dc);
+ 671               	.LM69:
+ 672 0226 87E2      		ldi r24,lo8(8999)
+ 673 0228 93E2      		ldi r25,hi8(8999)
+ 674 022a 0197      		1: sbiw r24,1
+ 675 022c 01F4      		brne 1b
+ 676 022e 00C0      		rjmp .
+ 677 0230 0000      		nop
+ 678               	.LBE29:
+ 679               	.LBE28:
+ 681               	.Ltext5:
+  66:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+  67:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     _delay_ms(wait_temperature);
+  68:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+  69:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     start_transmission();
+ 683               	.LM70:
+ 684 0232 0E94 0000 		call start_transmission
+  70:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_write_addr);
+ 686               	.LM71:
+ 687 0236 8EEE      		ldi r24,lo8(-18)
+ 688 0238 0E94 0000 		call send_addr
+  71:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(out_msb);
+ 690               	.LM72:
+ 691 023c 86EF      		ldi r24,lo8(-10)
+ 692 023e 0E94 0000 		call send_data
+  72:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(out_lsb);
+ 694               	.LM73:
+ 695 0242 87EF      		ldi r24,lo8(-9)
+ 696 0244 0E94 0000 		call send_data
+  73:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     restart();
+ 698               	.LM74:
+ 699 0248 0E94 0000 		call restart
+  74:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_read_addr);
+ 701               	.LM75:
+ 702 024c 8FEE      		ldi r24,lo8(-17)
+ 703 024e 0E94 0000 		call send_addr
+  75:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     _temperature = read_data(1) << 8;
+ 705               	.LM76:
+ 706 0252 81E0      		ldi r24,lo8(1)
+ 707 0254 90E0      		ldi r25,0
+ 708 0256 0E94 0000 		call read_data
+ 709 025a 682F      		mov r22,r24
+ 710 025c 70E0      		ldi r23,0
+ 711 025e D62F      		mov r29,r22
+ 712 0260 CC27      		clr r28
+  76:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     _temperature |= read_data(0);
+ 714               	.LM77:
+ 715 0262 80E0      		ldi r24,0
+ 716 0264 90E0      		ldi r25,0
+ 717 0266 0E94 0000 		call read_data
+ 718 026a C82B      		or r28,r24
+  77:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     end_transmission();
+ 720               	.LM78:
+ 721 026c 0E94 0000 		call end_transmission
+  78:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     return (long) _temperature;
+ 723               	.LM79:
+ 724 0270 BE01      		movw r22,r28
+ 725 0272 8827      		clr r24
+ 726 0274 77FD      		sbrc r23,7
+ 727 0276 8095      		com r24
+ 728 0278 982F      		mov r25,r24
+ 729               	/* epilogue start */
+  79:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+ 731               	.LM80:
+ 732 027a DF91      		pop r29
+ 733 027c CF91      		pop r28
+ 734 027e 0895      		ret
+ 736               	.Lscope12:
+ 737               	.global	__fixsfsi
+ 739               	.global	calculate_temperature
+ 741               	calculate_temperature:
+  20:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void calculate_temperature() {
+ 743               	.LM81:
+ 744               	.LFBB13:
+ 745 0280 8F92      		push r8
+ 746 0282 9F92      		push r9
+ 747 0284 AF92      		push r10
+ 748 0286 BF92      		push r11
+ 749 0288 CF92      		push r12
+ 750 028a DF92      		push r13
+ 751 028c EF92      		push r14
+ 752 028e FF92      		push r15
+ 753               	/* prologue: function */
+ 754               	/* frame size = 0 */
+ 755               	/* stack size = 8 */
+ 756               	.L__stack_usage = 8
+  22:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     UT = read_temperature();
+ 758               	.LM82:
+ 759 0290 0E94 0000 		call read_temperature
+ 760 0294 9B01      		movw r18,r22
+ 761 0296 AC01      		movw r20,r24
+  23:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (UT - bmp_180.calib_coeffs.AC6) * bmp_180.calib_coeffs.AC5 / pow(2, 15);
+ 763               	.LM83:
+ 764 0298 8091 0000 		lds r24,bmp_180+32
+ 765 029c 9091 0000 		lds r25,bmp_180+32+1
+ 766 02a0 281B      		sub r18,r24
+ 767 02a2 390B      		sbc r19,r25
+ 768 02a4 4109      		sbc r20,__zero_reg__
+ 769 02a6 5109      		sbc r21,__zero_reg__
+ 770 02a8 A091 0000 		lds r26,bmp_180+30
+ 771 02ac B091 0000 		lds r27,bmp_180+30+1
+ 772 02b0 0E94 0000 		call __muluhisi3
+ 773 02b4 0E94 0000 		call __floatsisf
+ 774 02b8 20E0      		ldi r18,0
+ 775 02ba 30E0      		ldi r19,0
+ 776 02bc 40E0      		ldi r20,0
+ 777 02be 58E3      		ldi r21,lo8(56)
+ 778 02c0 0E94 0000 		call __mulsf3
+ 779 02c4 0E94 0000 		call __fixsfsi
+ 780 02c8 6B01      		movw r12,r22
+ 781 02ca 7C01      		movw r14,r24
+  24:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = bmp_180.calib_coeffs.MC * pow(2, 11) / (X1 + bmp_180.calib_coeffs.MD);
+ 783               	.LM84:
+ 784 02cc 6091 0000 		lds r22,bmp_180+44
+ 785 02d0 7091 0000 		lds r23,bmp_180+44+1
+ 786 02d4 8827      		clr r24
+ 787 02d6 77FD      		sbrc r23,7
+ 788 02d8 8095      		com r24
+ 789 02da 982F      		mov r25,r24
+ 790 02dc 0E94 0000 		call __floatsisf
+ 791 02e0 20E0      		ldi r18,0
+ 792 02e2 30E0      		ldi r19,0
+ 793 02e4 40E0      		ldi r20,0
+ 794 02e6 55E4      		ldi r21,lo8(69)
+ 795 02e8 0E94 0000 		call __mulsf3
+ 796 02ec 4B01      		movw r8,r22
+ 797 02ee 5C01      		movw r10,r24
+ 798 02f0 8091 0000 		lds r24,bmp_180+46
+ 799 02f4 9091 0000 		lds r25,bmp_180+46+1
+ 800 02f8 BC01      		movw r22,r24
+ 801 02fa 8827      		clr r24
+ 802 02fc 77FD      		sbrc r23,7
+ 803 02fe 8095      		com r24
+ 804 0300 982F      		mov r25,r24
+ 805 0302 6C0D      		add r22,r12
+ 806 0304 7D1D      		adc r23,r13
+ 807 0306 8E1D      		adc r24,r14
+ 808 0308 9F1D      		adc r25,r15
+ 809 030a 0E94 0000 		call __floatsisf
+ 810 030e 9B01      		movw r18,r22
+ 811 0310 AC01      		movw r20,r24
+ 812 0312 C501      		movw r24,r10
+ 813 0314 B401      		movw r22,r8
+ 814 0316 0E94 0000 		call __divsf3
+ 815 031a 0E94 0000 		call __fixsfsi
+  25:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B5 = X1 + X2;
+ 817               	.LM85:
+ 818 031e 6C0D      		add r22,r12
+ 819 0320 7D1D      		adc r23,r13
+ 820 0322 8E1D      		adc r24,r14
+ 821 0324 9F1D      		adc r25,r15
+  26:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.B5 = B5;
+ 823               	.LM86:
+ 824 0326 6093 0000 		sts bmp_180+38,r22
+ 825 032a 7093 0000 		sts bmp_180+38+1,r23
+ 826 032e 8093 0000 		sts bmp_180+38+2,r24
+ 827 0332 9093 0000 		sts bmp_180+38+3,r25
+  27:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.temperature = (B5 + 8) / pow(2, 4);
+ 829               	.LM87:
+ 830 0336 685F      		subi r22,-8
+ 831 0338 7F4F      		sbci r23,-1
+ 832 033a 8F4F      		sbci r24,-1
+ 833 033c 9F4F      		sbci r25,-1
+ 834 033e 0E94 0000 		call __floatsisf
+ 835 0342 20E0      		ldi r18,0
+ 836 0344 30E0      		ldi r19,0
+ 837 0346 40E8      		ldi r20,lo8(-128)
+ 838 0348 5DE3      		ldi r21,lo8(61)
+ 839 034a 0E94 0000 		call __mulsf3
+ 840 034e 0E94 0000 		call __fixsfsi
+ 841 0352 6093 0000 		sts bmp_180+10,r22
+ 842 0356 7093 0000 		sts bmp_180+10+1,r23
+ 843 035a 8093 0000 		sts bmp_180+10+2,r24
+ 844 035e 9093 0000 		sts bmp_180+10+3,r25
+ 845               	/* epilogue start */
+  28:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+ 847               	.LM88:
+ 848 0362 FF90      		pop r15
+ 849 0364 EF90      		pop r14
+ 850 0366 DF90      		pop r13
+ 851 0368 CF90      		pop r12
+ 852 036a BF90      		pop r11
+ 853 036c AF90      		pop r10
+ 854 036e 9F90      		pop r9
+ 855 0370 8F90      		pop r8
+ 856 0372 0895      		ret
+ 861               	.Lscope13:
+ 863               	.global	read_pressure
+ 865               	read_pressure:
+  80:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+  81:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** long read_pressure() {
+ 867               	.LM89:
+ 868               	.LFBB14:
+ 869 0374 1F93      		push r17
+ 870 0376 CF93      		push r28
+ 871 0378 DF93      		push r29
+ 872               	/* prologue: function */
+ 873               	/* frame size = 0 */
+ 874               	/* stack size = 3 */
+ 875               	.L__stack_usage = 3
+  82:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     long UP;
+  83:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     uint8_t msb, lsb, xlsb;
+  84:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     //uint32_t buffer;
+  85:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     start_transmission();
+ 877               	.LM90:
+ 878 037a 0E94 0000 		call start_transmission
+  86:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_write_addr);
+ 880               	.LM91:
+ 881 037e 8EEE      		ldi r24,lo8(-18)
+ 882 0380 0E94 0000 		call send_addr
+  87:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(control_reg_addr);
+ 884               	.LM92:
+ 885 0384 84EF      		ldi r24,lo8(-12)
+ 886 0386 0E94 0000 		call send_data
+  88:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+  89:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     switch (bmp_180.mode) {
+ 888               	.LM93:
+ 889 038a 8091 0000 		lds r24,bmp_180
+ 890 038e 9091 0000 		lds r25,bmp_180+1
+ 891 0392 8230      		cpi r24,2
+ 892 0394 9105      		cpc r25,__zero_reg__
+ 893 0396 01F0      		breq .L75
+ 894 0398 8330      		cpi r24,3
+ 895 039a 9105      		cpc r25,__zero_reg__
+ 896 039c 01F0      		breq .L76
+ 897 039e 0197      		sbiw r24,1
+ 898 03a0 01F0      		breq .L77
+  90:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         default:
+  91:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         case bmp180_mode_0:
+  92:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             send_data(pressure_0_sel);
+ 900               	.LM94:
+ 901 03a2 84E3      		ldi r24,lo8(52)
+ 902 03a4 0E94 0000 		call send_data
+  93:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             end_transmission();
+ 904               	.LM95:
+ 905 03a8 0E94 0000 		call end_transmission
+ 906               	.LBB30:
+ 907               	.LBB31:
+ 909               	.Ltext6:
+ 911               	.LM96:
+ 912 03ac 87E2      		ldi r24,lo8(8999)
+ 913 03ae 93E2      		ldi r25,hi8(8999)
+ 914 03b0 0197      		1: sbiw r24,1
+ 915 03b2 01F4      		brne 1b
+ 916 03b4 00C0      		rjmp .L79
+ 917               	.L77:
+ 918               	.LBE31:
+ 919               	.LBE30:
+ 921               	.Ltext7:
+  94:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             _delay_ms(wait_pressure_mode_0);
+  95:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             break;
+  96:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         case bmp180_mode_1:
+  97:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             send_data(pressure_1_sel);
+ 923               	.LM97:
+ 924 03b6 84E7      		ldi r24,lo8(116)
+ 925 03b8 0E94 0000 		call send_data
+  98:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             end_transmission();
+ 927               	.LM98:
+ 928 03bc 0E94 0000 		call end_transmission
+ 929               	.LBB32:
+ 930               	.LBB33:
+ 932               	.Ltext8:
+ 934               	.LM99:
+ 935 03c0 87E9      		ldi r24,lo8(14999)
+ 936 03c2 9AE3      		ldi r25,hi8(14999)
+ 937 03c4 0197      		1: sbiw r24,1
+ 938 03c6 01F4      		brne 1b
+ 939 03c8 00C0      		rjmp .L79
+ 940               	.L75:
+ 941               	.LBE33:
+ 942               	.LBE32:
+ 944               	.Ltext9:
+  99:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             _delay_ms(wait_pressure_mode_1);
+ 100:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             break;
+ 101:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         case bmp180_mode_2:
+ 102:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             send_data(pressure_2_sel);
+ 946               	.LM100:
+ 947 03ca 84EB      		ldi r24,lo8(-76)
+ 948 03cc 0E94 0000 		call send_data
+ 103:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             end_transmission();
+ 950               	.LM101:
+ 951 03d0 0E94 0000 		call end_transmission
+ 952               	.LBB34:
+ 953               	.LBB35:
+ 955               	.Ltext10:
+ 957               	.LM102:
+ 958 03d4 87E7      		ldi r24,lo8(26999)
+ 959 03d6 99E6      		ldi r25,hi8(26999)
+ 960 03d8 0197      		1: sbiw r24,1
+ 961 03da 01F4      		brne 1b
+ 962 03dc 00C0      		rjmp .L79
+ 963               	.L76:
+ 964               	.LBE35:
+ 965               	.LBE34:
+ 967               	.Ltext11:
+ 104:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             _delay_ms(wait_pressure_mode_2);
+ 105:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             break;
+ 106:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         case bmp180_mode_3:
+ 107:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             send_data(pressure_3_sel);
+ 969               	.LM103:
+ 970 03de 84EF      		ldi r24,lo8(-12)
+ 971 03e0 0E94 0000 		call send_data
+ 108:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             end_transmission();
+ 973               	.LM104:
+ 974 03e4 0E94 0000 		call end_transmission
+ 975               	.LBB36:
+ 976               	.LBB37:
+ 978               	.Ltext12:
+ 980               	.LM105:
+ 981 03e8 87E3      		ldi r24,lo8(-14537)
+ 982 03ea 97EC      		ldi r25,hi8(-14537)
+ 983 03ec 0197      		1: sbiw r24,1
+ 984 03ee 01F4      		brne 1b
+ 985               	.L79:
+ 986 03f0 00C0      		rjmp .
+ 987 03f2 0000      		nop
+ 988               	.LBE37:
+ 989               	.LBE36:
+ 991               	.Ltext13:
+ 109:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             _delay_ms(wait_pressure_mode_3);
+ 110:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****             break;
+ 111:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     }
+ 112:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+ 113:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****  
+ 114:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     start_transmission();
+ 993               	.LM106:
+ 994 03f4 0E94 0000 		call start_transmission
+ 115:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_write_addr);
+ 996               	.LM107:
+ 997 03f8 8EEE      		ldi r24,lo8(-18)
+ 998 03fa 0E94 0000 		call send_addr
+ 116:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(out_msb);
+ 1000               	.LM108:
+ 1001 03fe 86EF      		ldi r24,lo8(-10)
+ 1002 0400 0E94 0000 		call send_data
+ 117:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(out_lsb);
+ 1004               	.LM109:
+ 1005 0404 87EF      		ldi r24,lo8(-9)
+ 1006 0406 0E94 0000 		call send_data
+ 118:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     restart();
+ 1008               	.LM110:
+ 1009 040a 0E94 0000 		call restart
+ 119:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_read_addr);
+ 1011               	.LM111:
+ 1012 040e 8FEE      		ldi r24,lo8(-17)
+ 1013 0410 0E94 0000 		call send_addr
+ 120:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     msb = read_data(1);
+ 1015               	.LM112:
+ 1016 0414 81E0      		ldi r24,lo8(1)
+ 1017 0416 90E0      		ldi r25,0
+ 1018 0418 0E94 0000 		call read_data
+ 1019 041c C82F      		mov r28,r24
+ 121:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     lsb = read_data(0);
+ 1021               	.LM113:
+ 1022 041e 80E0      		ldi r24,0
+ 1023 0420 90E0      		ldi r25,0
+ 1024 0422 0E94 0000 		call read_data
+ 1025 0426 182F      		mov r17,r24
+ 122:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     end_transmission();
+ 1027               	.LM114:
+ 1028 0428 0E94 0000 		call end_transmission
+ 123:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+ 124:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     start_transmission();
+ 1030               	.LM115:
+ 1031 042c 0E94 0000 		call start_transmission
+ 125:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_write_addr);
+ 1033               	.LM116:
+ 1034 0430 8EEE      		ldi r24,lo8(-18)
+ 1035 0432 0E94 0000 		call send_addr
+ 126:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_data(out_xlsb);
+ 1037               	.LM117:
+ 1038 0436 88EF      		ldi r24,lo8(-8)
+ 1039 0438 0E94 0000 		call send_data
+ 127:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     restart();
+ 1041               	.LM118:
+ 1042 043c 0E94 0000 		call restart
+ 128:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     send_addr(bmp180_read_addr);
+ 1044               	.LM119:
+ 1045 0440 8FEE      		ldi r24,lo8(-17)
+ 1046 0442 0E94 0000 		call send_addr
+ 129:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     xlsb = read_data(0);
+ 1048               	.LM120:
+ 1049 0446 80E0      		ldi r24,0
+ 1050 0448 90E0      		ldi r25,0
+ 1051 044a 0E94 0000 		call read_data
+ 1052 044e D82F      		mov r29,r24
+ 130:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     end_transmission();
+ 1054               	.LM121:
+ 1055 0450 0E94 0000 		call end_transmission
+ 131:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+ 132:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     UP = ((unsigned long) msb << 16 | (unsigned long) lsb << 8 | (unsigned long) xlsb) >> (8 - bmp_
+ 1057               	.LM122:
+ 1058 0454 812F      		mov r24,r17
+ 1059 0456 90E0      		ldi r25,0
+ 1060 0458 A0E0      		ldi r26,0
+ 1061 045a B0E0      		ldi r27,0
+ 1062 045c 6627      		clr r22
+ 1063 045e 782F      		mov r23,r24
+ 1064 0460 892F      		mov r24,r25
+ 1065 0462 9A2F      		mov r25,r26
+ 1066 0464 8C2B      		or r24,r28
+ 1067 0466 6D2B      		or r22,r29
+ 1068 0468 28E0      		ldi r18,lo8(8)
+ 1069 046a 30E0      		ldi r19,0
+ 1070 046c 4091 0000 		lds r20,bmp_180
+ 1071 0470 5091 0000 		lds r21,bmp_180+1
+ 1072 0474 241B      		sub r18,r20
+ 1073 0476 350B      		sbc r19,r21
+ 1074 0478 00C0      		rjmp 2f
+ 1075               		1:
+ 1076 047a 9695      		lsr r25
+ 1077 047c 8795      		ror r24
+ 1078 047e 7795      		ror r23
+ 1079 0480 6795      		ror r22
+ 1080               		2:
+ 1081 0482 2A95      		dec r18
+ 1082 0484 02F4      		brpl 1b
+ 1083               	/* epilogue start */
+ 133:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     return (long) UP;
+ 134:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+ 1085               	.LM123:
+ 1086 0486 DF91      		pop r29
+ 1087 0488 CF91      		pop r28
+ 1088 048a 1F91      		pop r17
+ 1089 048c 0895      		ret
+ 1096               	.Lscope14:
+ 1098               	.global	calculate_pressure
+ 1100               	calculate_pressure:
+  30:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void calculate_pressure() {
+ 1102               	.LM124:
+ 1103               	.LFBB15:
+ 1104 048e 3F92      		push r3
+ 1105 0490 4F92      		push r4
+ 1106 0492 5F92      		push r5
+ 1107 0494 6F92      		push r6
+ 1108 0496 7F92      		push r7
+ 1109 0498 8F92      		push r8
+ 1110 049a 9F92      		push r9
+ 1111 049c AF92      		push r10
+ 1112 049e BF92      		push r11
+ 1113 04a0 CF92      		push r12
+ 1114 04a2 DF92      		push r13
+ 1115 04a4 EF92      		push r14
+ 1116 04a6 FF92      		push r15
+ 1117 04a8 0F93      		push r16
+ 1118 04aa 1F93      		push r17
+ 1119 04ac CF93      		push r28
+ 1120 04ae DF93      		push r29
+ 1121 04b0 CDB7      		in r28,__SP_L__
+ 1122 04b2 DEB7      		in r29,__SP_H__
+ 1123 04b4 2897      		sbiw r28,8
+ 1124 04b6 0FB6      		in __tmp_reg__,__SREG__
+ 1125 04b8 F894      		cli
+ 1126 04ba DEBF      		out __SP_H__,r29
+ 1127 04bc 0FBE      		out __SREG__,__tmp_reg__
+ 1128 04be CDBF      		out __SP_L__,r28
+ 1129               	/* prologue: function */
+ 1130               	/* frame size = 8 */
+ 1131               	/* stack size = 25 */
+ 1132               	.L__stack_usage = 25
+  33:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     UP = read_pressure();
+ 1134               	.LM125:
+ 1135 04c0 0E94 0000 		call read_pressure
+ 1136 04c4 6D83      		std Y+5,r22
+ 1137 04c6 7E83      		std Y+6,r23
+ 1138 04c8 8F83      		std Y+7,r24
+ 1139 04ca 9887      		std Y+8,r25
+  34:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B6 = bmp_180.calib_coeffs.B5 - 4000;
+ 1141               	.LM126:
+ 1142 04cc 8090 0000 		lds r8,bmp_180+38
+ 1143 04d0 9090 0000 		lds r9,bmp_180+38+1
+ 1144 04d4 A090 0000 		lds r10,bmp_180+38+2
+ 1145 04d8 B090 0000 		lds r11,bmp_180+38+3
+ 1146 04dc 80EA      		ldi r24,-96
+ 1147 04de 881A      		sub r8,r24
+ 1148 04e0 8FE0      		ldi r24,15
+ 1149 04e2 980A      		sbc r9,r24
+ 1150 04e4 A108      		sbc r10,__zero_reg__
+ 1151 04e6 B108      		sbc r11,__zero_reg__
+  35:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (bmp_180.calib_coeffs.B2 * (B6 * B6 >> 12)) >> 11;
+ 1153               	.LM127:
+ 1154 04e8 A501      		movw r20,r10
+ 1155 04ea 9401      		movw r18,r8
+ 1156 04ec C501      		movw r24,r10
+ 1157 04ee B401      		movw r22,r8
+ 1158 04f0 0E94 0000 		call __mulsi3
+ 1159 04f4 2B01      		movw r4,r22
+ 1160 04f6 3C01      		movw r6,r24
+ 1161 04f8 FCE0      		ldi r31,12
+ 1162               		1:
+ 1163 04fa 7594      		asr r7
+ 1164 04fc 6794      		ror r6
+ 1165 04fe 5794      		ror r5
+ 1166 0500 4794      		ror r4
+ 1167 0502 FA95      		dec r31
+ 1168 0504 01F4      		brne 1b
+  38:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B3 = ((((long)bmp_180.calib_coeffs.AC1 * 4 + X3) << bmp_180.mode) + 2) / 4;
+ 1170               	.LM128:
+ 1171 0506 0091 0000 		lds r16,bmp_180+22
+ 1172 050a 1091 0000 		lds r17,bmp_180+22+1
+ 1173 050e 3090 0000 		lds r3,bmp_180
+  39:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = bmp_180.calib_coeffs.AC3 * B6 >> 13;
+ 1175               	.LM129:
+ 1176 0512 A091 0000 		lds r26,bmp_180+26
+ 1177 0516 B091 0000 		lds r27,bmp_180+26+1
+ 1178 051a 0E94 0000 		call __mulshisi3
+ 1179 051e 6B01      		movw r12,r22
+ 1180 0520 7C01      		movw r14,r24
+ 1181 0522 ADE0      		ldi r26,13
+ 1182               		1:
+ 1183 0524 F594      		asr r15
+ 1184 0526 E794      		ror r14
+ 1185 0528 D794      		ror r13
+ 1186 052a C794      		ror r12
+ 1187 052c AA95      		dec r26
+ 1188 052e 01F4      		brne 1b
+  40:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = (bmp_180.calib_coeffs.B1 * (B6 * B6 >> 12)) >> 16;
+ 1190               	.LM130:
+ 1191 0530 A091 0000 		lds r26,bmp_180+34
+ 1192 0534 B091 0000 		lds r27,bmp_180+34+1
+ 1193 0538 A301      		movw r20,r6
+ 1194 053a 9201      		movw r18,r4
+ 1195 053c 0E94 0000 		call __mulshisi3
+ 1196 0540 BB27      		clr r27
+ 1197 0542 97FD      		sbrc r25,7
+ 1198 0544 B095      		com r27
+ 1199 0546 AB2F      		mov r26,r27
+  41:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X3 = ((X1 + X2) + 2) >> 2;
+ 1201               	.LM131:
+ 1202 0548 C80E      		add r12,r24
+ 1203 054a D91E      		adc r13,r25
+ 1204 054c EA1E      		adc r14,r26
+ 1205 054e FB1E      		adc r15,r27
+ 1206 0550 92E0      		ldi r25,2
+ 1207 0552 C90E      		add r12,r25
+ 1208 0554 D11C      		adc r13,__zero_reg__
+ 1209 0556 E11C      		adc r14,__zero_reg__
+ 1210 0558 F11C      		adc r15,__zero_reg__
+ 1211 055a 82E0      		ldi r24,2
+ 1212               		1:
+ 1213 055c F594      		asr r15
+ 1214 055e E794      		ror r14
+ 1215 0560 D794      		ror r13
+ 1216 0562 C794      		ror r12
+ 1217 0564 8A95      		dec r24
+ 1218 0566 01F4      		brne 1b
+  42:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B4 = bmp_180.calib_coeffs.AC4 * (unsigned long) (X3 + 32768) >> 15;
+ 1220               	.LM132:
+ 1221 0568 A0E8      		ldi r26,-128
+ 1222 056a DA0E      		add r13,r26
+ 1223 056c E11C      		adc r14,__zero_reg__
+ 1224 056e F11C      		adc r15,__zero_reg__
+ 1225 0570 A091 0000 		lds r26,bmp_180+28
+ 1226 0574 B091 0000 		lds r27,bmp_180+28+1
+ 1227 0578 A701      		movw r20,r14
+ 1228 057a 9601      		movw r18,r12
+ 1229 057c 0E94 0000 		call __muluhisi3
+ 1230 0580 DC01      		movw r26,r24
+ 1231 0582 CB01      		movw r24,r22
+ 1232 0584 2FE0      		ldi r18,15
+ 1233               		1:
+ 1234 0586 B695      		lsr r27
+ 1235 0588 A795      		ror r26
+ 1236 058a 9795      		ror r25
+ 1237 058c 8795      		ror r24
+ 1238 058e 2A95      		dec r18
+ 1239 0590 01F4      		brne 1b
+ 1240 0592 8983      		std Y+1,r24
+ 1241 0594 9A83      		std Y+2,r25
+ 1242 0596 AB83      		std Y+3,r26
+ 1243 0598 BC83      		std Y+4,r27
+  38:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B3 = ((((long)bmp_180.calib_coeffs.AC1 * 4 + X3) << bmp_180.mode) + 2) / 4;
+ 1245               	.LM133:
+ 1246 059a 6801      		movw r12,r16
+ 1247 059c EE24      		clr r14
+ 1248 059e D7FC      		sbrc r13,7
+ 1249 05a0 E094      		com r14
+ 1250 05a2 FE2C      		mov r15,r14
+ 1251 05a4 32E0      		ldi r19,2
+ 1252               		1:
+ 1253 05a6 CC0C      		lsl r12
+ 1254 05a8 DD1C      		rol r13
+ 1255 05aa EE1C      		rol r14
+ 1256 05ac FF1C      		rol r15
+ 1257 05ae 3A95      		dec r19
+ 1258 05b0 01F4      		brne 1b
+  35:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (bmp_180.calib_coeffs.B2 * (B6 * B6 >> 12)) >> 11;
+ 1260               	.LM134:
+ 1261 05b2 A091 0000 		lds r26,bmp_180+36
+ 1262 05b6 B091 0000 		lds r27,bmp_180+36+1
+ 1263 05ba A301      		movw r20,r6
+ 1264 05bc 9201      		movw r18,r4
+ 1265 05be 0E94 0000 		call __mulshisi3
+ 1266 05c2 2B01      		movw r4,r22
+ 1267 05c4 3C01      		movw r6,r24
+ 1268 05c6 4BE0      		ldi r20,11
+ 1269               		1:
+ 1270 05c8 7594      		asr r7
+ 1271 05ca 6794      		ror r6
+ 1272 05cc 5794      		ror r5
+ 1273 05ce 4794      		ror r4
+ 1274 05d0 4A95      		dec r20
+ 1275 05d2 01F4      		brne 1b
+  36:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = bmp_180.calib_coeffs.AC2 * B6 >> 11;
+ 1277               	.LM135:
+ 1278 05d4 A091 0000 		lds r26,bmp_180+24
+ 1279 05d8 B091 0000 		lds r27,bmp_180+24+1
+ 1280 05dc A501      		movw r20,r10
+ 1281 05de 9401      		movw r18,r8
+ 1282 05e0 0E94 0000 		call __mulshisi3
+ 1283 05e4 5BE0      		ldi r21,11
+ 1284               		1:
+ 1285 05e6 9595      		asr r25
+ 1286 05e8 8795      		ror r24
+ 1287 05ea 7795      		ror r23
+ 1288 05ec 6795      		ror r22
+ 1289 05ee 5A95      		dec r21
+ 1290 05f0 01F4      		brne 1b
+  37:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X3 = X1 + X2;
+ 1292               	.LM136:
+ 1293 05f2 460E      		add r4,r22
+ 1294 05f4 571E      		adc r5,r23
+ 1295 05f6 681E      		adc r6,r24
+ 1296 05f8 791E      		adc r7,r25
+  38:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B3 = ((((long)bmp_180.calib_coeffs.AC1 * 4 + X3) << bmp_180.mode) + 2) / 4;
+ 1298               	.LM137:
+ 1299 05fa C40C      		add r12,r4
+ 1300 05fc D51C      		adc r13,r5
+ 1301 05fe E61C      		adc r14,r6
+ 1302 0600 F71C      		adc r15,r7
+ 1303 0602 032C      		mov r0,r3
+ 1304 0604 00C0      		rjmp 2f
+ 1305               		1:
+ 1306 0606 CC0C      		lsl r12
+ 1307 0608 DD1C      		rol r13
+ 1308 060a EE1C      		rol r14
+ 1309 060c FF1C      		rol r15
+ 1310               		2:
+ 1311 060e 0A94      		dec r0
+ 1312 0610 02F4      		brpl 1b
+ 1313 0612 92E0      		ldi r25,2
+ 1314 0614 C90E      		add r12,r25
+ 1315 0616 D11C      		adc r13,__zero_reg__
+ 1316 0618 E11C      		adc r14,__zero_reg__
+ 1317 061a F11C      		adc r15,__zero_reg__
+ 1318 061c C701      		movw r24,r14
+ 1319 061e B601      		movw r22,r12
+ 1320 0620 24E0      		ldi r18,lo8(4)
+ 1321 0622 30E0      		ldi r19,0
+ 1322 0624 40E0      		ldi r20,0
+ 1323 0626 50E0      		ldi r21,0
+ 1324 0628 0E94 0000 		call __divmodsi4
+  43:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     B7 = ((unsigned long) UP - B3) * (50000UL >> bmp_180.mode);
+ 1326               	.LM138:
+ 1327 062c 8D81      		ldd r24,Y+5
+ 1328 062e 9E81      		ldd r25,Y+6
+ 1329 0630 AF81      		ldd r26,Y+7
+ 1330 0632 B885      		ldd r27,Y+8
+ 1331 0634 821B      		sub r24,r18
+ 1332 0636 930B      		sbc r25,r19
+ 1333 0638 A40B      		sbc r26,r20
+ 1334 063a B50B      		sbc r27,r21
+ 1335 063c 8D83      		std Y+5,r24
+ 1336 063e 9E83      		std Y+6,r25
+ 1337 0640 AF83      		std Y+7,r26
+ 1338 0642 B887      		std Y+8,r27
+ 1339 0644 60E5      		ldi r22,lo8(80)
+ 1340 0646 73EC      		ldi r23,lo8(-61)
+ 1341 0648 80E0      		ldi r24,0
+ 1342 064a 90E0      		ldi r25,0
+ 1343 064c 00C0      		rjmp 2f
+ 1344               		1:
+ 1345 064e 9695      		lsr r25
+ 1346 0650 8795      		ror r24
+ 1347 0652 7795      		ror r23
+ 1348 0654 6795      		ror r22
+ 1349               		2:
+ 1350 0656 3A94      		dec r3
+ 1351 0658 02F4      		brpl 1b
+ 1352 065a 2D81      		ldd r18,Y+5
+ 1353 065c 3E81      		ldd r19,Y+6
+ 1354 065e 4F81      		ldd r20,Y+7
+ 1355 0660 5885      		ldd r21,Y+8
+ 1356 0662 0E94 0000 		call __mulsi3
+  44:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     if (B7 < 0x80000000UL)
+ 1358               	.LM139:
+ 1359 0666 97FD      		sbrc r25,7
+ 1360 0668 00C0      		rjmp .L81
+  45:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         _pressure = (B7 * 2) / B4;
+ 1362               	.LM140:
+ 1363 066a 660F      		lsl r22
+ 1364 066c 771F      		rol r23
+ 1365 066e 881F      		rol r24
+ 1366 0670 991F      		rol r25
+ 1367 0672 2981      		ldd r18,Y+1
+ 1368 0674 3A81      		ldd r19,Y+2
+ 1369 0676 4B81      		ldd r20,Y+3
+ 1370 0678 5C81      		ldd r21,Y+4
+ 1371 067a 0E94 0000 		call __udivmodsi4
+ 1372 067e 4901      		movw r8,r18
+ 1373 0680 5A01      		movw r10,r20
+ 1374 0682 00C0      		rjmp .L82
+ 1375               	.L81:
+  47:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         _pressure = (B7 / B4) * 2;
+ 1377               	.LM141:
+ 1378 0684 2981      		ldd r18,Y+1
+ 1379 0686 3A81      		ldd r19,Y+2
+ 1380 0688 4B81      		ldd r20,Y+3
+ 1381 068a 5C81      		ldd r21,Y+4
+ 1382 068c 0E94 0000 		call __udivmodsi4
+ 1383 0690 4901      		movw r8,r18
+ 1384 0692 5A01      		movw r10,r20
+ 1385 0694 880C      		lsl r8
+ 1386 0696 991C      		rol r9
+ 1387 0698 AA1C      		rol r10
+ 1388 069a BB1C      		rol r11
+ 1389               	.L82:
+  48:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (_pressure >> 8) * (_pressure >> 8);
+ 1391               	.LM142:
+ 1392 069c 9927      		clr r25
+ 1393 069e B7FC      		sbrc r11,7
+ 1394 06a0 9A95      		dec r25
+ 1395 06a2 8B2D      		mov r24,r11
+ 1396 06a4 7A2D      		mov r23,r10
+ 1397 06a6 692D      		mov r22,r9
+ 1398 06a8 9B01      		movw r18,r22
+ 1399 06aa AC01      		movw r20,r24
+ 1400 06ac 0E94 0000 		call __mulsi3
+ 1401 06b0 9B01      		movw r18,r22
+ 1402 06b2 AC01      		movw r20,r24
+  49:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X1 = (X1 * 3038) >> 16;
+ 1404               	.LM143:
+ 1405 06b4 AEED      		ldi r26,lo8(-34)
+ 1406 06b6 BBE0      		ldi r27,lo8(11)
+ 1407 06b8 0E94 0000 		call __muluhisi3
+ 1408 06bc 6C01      		movw r12,r24
+ 1409 06be FF24      		clr r15
+ 1410 06c0 D7FC      		sbrc r13,7
+ 1411 06c2 F094      		com r15
+ 1412 06c4 EF2C      		mov r14,r15
+  50:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     X2 = (-7357 * _pressure) >> 16;
+ 1414               	.LM144:
+ 1415 06c6 A3E4      		ldi r26,lo8(67)
+ 1416 06c8 B3EE      		ldi r27,lo8(-29)
+ 1417 06ca A501      		movw r20,r10
+ 1418 06cc 9401      		movw r18,r8
+ 1419 06ce 0E94 0000 		call __mulohisi3
+ 1420 06d2 BB27      		clr r27
+ 1421 06d4 97FD      		sbrc r25,7
+ 1422 06d6 B095      		com r27
+ 1423 06d8 AB2F      		mov r26,r27
+  51:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.pressure = _pressure + ((X1 + X2 + 3791) >> 4);
+ 1425               	.LM145:
+ 1426 06da C80E      		add r12,r24
+ 1427 06dc D91E      		adc r13,r25
+ 1428 06de EA1E      		adc r14,r26
+ 1429 06e0 FB1E      		adc r15,r27
+ 1430 06e2 9FEC      		ldi r25,-49
+ 1431 06e4 C90E      		add r12,r25
+ 1432 06e6 9EE0      		ldi r25,14
+ 1433 06e8 D91E      		adc r13,r25
+ 1434 06ea E11C      		adc r14,__zero_reg__
+ 1435 06ec F11C      		adc r15,__zero_reg__
+ 1436 06ee 64E0      		ldi r22,4
+ 1437               		1:
+ 1438 06f0 F594      		asr r15
+ 1439 06f2 E794      		ror r14
+ 1440 06f4 D794      		ror r13
+ 1441 06f6 C794      		ror r12
+ 1442 06f8 6A95      		dec r22
+ 1443 06fa 01F4      		brne 1b
+ 1444 06fc C80C      		add r12,r8
+ 1445 06fe D91C      		adc r13,r9
+ 1446 0700 EA1C      		adc r14,r10
+ 1447 0702 FB1C      		adc r15,r11
+ 1448 0704 C092 0000 		sts bmp_180+14,r12
+ 1449 0708 D092 0000 		sts bmp_180+14+1,r13
+ 1450 070c E092 0000 		sts bmp_180+14+2,r14
+ 1451 0710 F092 0000 		sts bmp_180+14+3,r15
+ 1452               	/* epilogue start */
+  52:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+ 1454               	.LM146:
+ 1455 0714 2896      		adiw r28,8
+ 1456 0716 0FB6      		in __tmp_reg__,__SREG__
+ 1457 0718 F894      		cli
+ 1458 071a DEBF      		out __SP_H__,r29
+ 1459 071c 0FBE      		out __SREG__,__tmp_reg__
+ 1460 071e CDBF      		out __SP_L__,r28
+ 1461 0720 DF91      		pop r29
+ 1462 0722 CF91      		pop r28
+ 1463 0724 1F91      		pop r17
+ 1464 0726 0F91      		pop r16
+ 1465 0728 FF90      		pop r15
+ 1466 072a EF90      		pop r14
+ 1467 072c DF90      		pop r13
+ 1468 072e CF90      		pop r12
+ 1469 0730 BF90      		pop r11
+ 1470 0732 AF90      		pop r10
+ 1471 0734 9F90      		pop r9
+ 1472 0736 8F90      		pop r8
+ 1473 0738 7F90      		pop r7
+ 1474 073a 6F90      		pop r6
+ 1475 073c 5F90      		pop r5
+ 1476 073e 4F90      		pop r4
+ 1477 0740 3F90      		pop r3
+ 1478 0742 0895      		ret
+ 1486               	.Lscope15:
+ 1488               	.global	read_coeffs
+ 1490               	read_coeffs:
+ 135:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+ 136:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void read_coeffs() {
+ 1492               	.LM147:
+ 1493               	.LFBB16:
+ 1494 0744 DF92      		push r13
+ 1495 0746 EF92      		push r14
+ 1496 0748 FF92      		push r15
+ 1497 074a 0F93      		push r16
+ 1498 074c 1F93      		push r17
+ 1499 074e CF93      		push r28
+ 1500 0750 DF93      		push r29
+ 1501 0752 CDB7      		in r28,__SP_L__
+ 1502 0754 DEB7      		in r29,__SP_H__
+ 1503 0756 6697      		sbiw r28,22
+ 1504 0758 0FB6      		in __tmp_reg__,__SREG__
+ 1505 075a F894      		cli
+ 1506 075c DEBF      		out __SP_H__,r29
+ 1507 075e 0FBE      		out __SREG__,__tmp_reg__
+ 1508 0760 CDBF      		out __SP_L__,r28
+ 1509               	/* prologue: function */
+ 1510               	/* frame size = 22 */
+ 1511               	/* stack size = 29 */
+ 1512               	.L__stack_usage = 29
+ 1513 0762 00E0      		ldi r16,lo8(bmp180_coeff_addr)
+ 1514 0764 10E0      		ldi r17,hi8(bmp180_coeff_addr)
+ 1515 0766 CE01      		movw r24,r28
+ 1516 0768 0196      		adiw r24,1
+ 1517 076a 7C01      		movw r14,r24
+ 1518               	.L85:
+ 1519               	.LBB38:
+ 137:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+ 138:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     uint16_t coeffs[11];
+ 139:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+ 140:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     for (short i = 0; i < 11; i++) {
+ 141:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         start_transmission();
+ 1521               	.LM148:
+ 1522 076c 0E94 0000 		call start_transmission
+ 142:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         send_addr(bmp180_write_addr);
+ 1524               	.LM149:
+ 1525 0770 8EEE      		ldi r24,lo8(-18)
+ 1526 0772 0E94 0000 		call send_addr
+ 143:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         send_data((bmp180_coeff_addr[i] & 0xFF00) >> 8);
+ 1528               	.LM150:
+ 1529 0776 F801      		movw r30,r16
+ 1530 0778 D080      		ld r13,Z
+ 1531 077a 8181      		ldd r24,Z+1
+ 1532 077c 0E5F      		subi r16,-2
+ 1533 077e 1F4F      		sbci r17,-1
+ 1534 0780 0E94 0000 		call send_data
+ 144:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         send_data(bmp180_coeff_addr[i] & 0x00FF);
+ 1536               	.LM151:
+ 1537 0784 8D2D      		mov r24,r13
+ 1538 0786 0E94 0000 		call send_data
+ 145:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         restart();
+ 1540               	.LM152:
+ 1541 078a 0E94 0000 		call restart
+ 146:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         send_addr(bmp180_read_addr);
+ 1543               	.LM153:
+ 1544 078e 8FEE      		ldi r24,lo8(-17)
+ 1545 0790 0E94 0000 		call send_addr
+ 147:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         coeffs[i] = read_data(1) << 8;
+ 1547               	.LM154:
+ 1548 0794 81E0      		ldi r24,lo8(1)
+ 1549 0796 90E0      		ldi r25,0
+ 1550 0798 0E94 0000 		call read_data
+ 1551 079c D82E      		mov r13,r24
+ 148:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         coeffs[i] |= read_data(0);
+ 1553               	.LM155:
+ 1554 079e 80E0      		ldi r24,0
+ 1555 07a0 90E0      		ldi r25,0
+ 1556 07a2 0E94 0000 		call read_data
+ 147:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         coeffs[i] = read_data(1) << 8;
+ 1558               	.LM156:
+ 1559 07a6 2D2D      		mov r18,r13
+ 1560 07a8 30E0      		ldi r19,0
+ 1561 07aa 322F      		mov r19,r18
+ 1562 07ac 2227      		clr r18
+ 1564               	.LM157:
+ 1565 07ae 282B      		or r18,r24
+ 1566 07b0 F701      		movw r30,r14
+ 1567 07b2 2193      		st Z+,r18
+ 1568 07b4 3193      		st Z+,r19
+ 1569 07b6 7F01      		movw r14,r30
+ 149:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****         end_transmission();
+ 1571               	.LM158:
+ 1572 07b8 0E94 0000 		call end_transmission
+ 140:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     for (short i = 0; i < 11; i++) {
+ 1574               	.LM159:
+ 1575 07bc F0E0      		ldi r31,hi8(bmp180_coeff_addr+22)
+ 1576 07be 0030      		cpi r16,lo8(bmp180_coeff_addr+22)
+ 1577 07c0 1F07      		cpc r17,r31
+ 1578 07c2 01F4      		brne .L85
+ 1579               	.LBE38:
+ 150:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     }
+ 151:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+ 152:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.AC1 = (short) coeffs[0];
+ 1581               	.LM160:
+ 1582 07c4 8981      		ldd r24,Y+1
+ 1583 07c6 9A81      		ldd r25,Y+2
+ 1584 07c8 9093 0000 		sts bmp_180+22+1,r25
+ 1585 07cc 8093 0000 		sts bmp_180+22,r24
+ 153:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.AC2 = (short) coeffs[1];
+ 1587               	.LM161:
+ 1588 07d0 8B81      		ldd r24,Y+3
+ 1589 07d2 9C81      		ldd r25,Y+4
+ 1590 07d4 9093 0000 		sts bmp_180+24+1,r25
+ 1591 07d8 8093 0000 		sts bmp_180+24,r24
+ 154:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.AC3 = (short) coeffs[2];
+ 1593               	.LM162:
+ 1594 07dc 8D81      		ldd r24,Y+5
+ 1595 07de 9E81      		ldd r25,Y+6
+ 1596 07e0 9093 0000 		sts bmp_180+26+1,r25
+ 1597 07e4 8093 0000 		sts bmp_180+26,r24
+ 155:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.AC4 = (uint16_t) coeffs[3];
+ 1599               	.LM163:
+ 1600 07e8 8F81      		ldd r24,Y+7
+ 1601 07ea 9885      		ldd r25,Y+8
+ 1602 07ec 9093 0000 		sts bmp_180+28+1,r25
+ 1603 07f0 8093 0000 		sts bmp_180+28,r24
+ 156:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.AC5 = (uint16_t) coeffs[4];
+ 1605               	.LM164:
+ 1606 07f4 8985      		ldd r24,Y+9
+ 1607 07f6 9A85      		ldd r25,Y+10
+ 1608 07f8 9093 0000 		sts bmp_180+30+1,r25
+ 1609 07fc 8093 0000 		sts bmp_180+30,r24
+ 157:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.AC6 = (uint16_t) coeffs[5];
+ 1611               	.LM165:
+ 1612 0800 8B85      		ldd r24,Y+11
+ 1613 0802 9C85      		ldd r25,Y+12
+ 1614 0804 9093 0000 		sts bmp_180+32+1,r25
+ 1615 0808 8093 0000 		sts bmp_180+32,r24
+ 158:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.B1 = (short) coeffs[6];
+ 1617               	.LM166:
+ 1618 080c 8D85      		ldd r24,Y+13
+ 1619 080e 9E85      		ldd r25,Y+14
+ 1620 0810 9093 0000 		sts bmp_180+34+1,r25
+ 1621 0814 8093 0000 		sts bmp_180+34,r24
+ 159:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.B2 = (short) coeffs[7];
+ 1623               	.LM167:
+ 1624 0818 8F85      		ldd r24,Y+15
+ 1625 081a 9889      		ldd r25,Y+16
+ 1626 081c 9093 0000 		sts bmp_180+36+1,r25
+ 1627 0820 8093 0000 		sts bmp_180+36,r24
+ 160:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.MB = (short) coeffs[8];
+ 1629               	.LM168:
+ 1630 0824 8989      		ldd r24,Y+17
+ 1631 0826 9A89      		ldd r25,Y+18
+ 1632 0828 9093 0000 		sts bmp_180+42+1,r25
+ 1633 082c 8093 0000 		sts bmp_180+42,r24
+ 161:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.MC = (short) coeffs[9];
+ 1635               	.LM169:
+ 1636 0830 8B89      		ldd r24,Y+19
+ 1637 0832 9C89      		ldd r25,Y+20
+ 1638 0834 9093 0000 		sts bmp_180+44+1,r25
+ 1639 0838 8093 0000 		sts bmp_180+44,r24
+ 162:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.calib_coeffs.MD = (short) coeffs[10];
+ 1641               	.LM170:
+ 1642 083c 8D89      		ldd r24,Y+21
+ 1643 083e 9E89      		ldd r25,Y+22
+ 1644 0840 9093 0000 		sts bmp_180+46+1,r25
+ 1645 0844 8093 0000 		sts bmp_180+46,r24
+ 1646               	/* epilogue start */
+ 163:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     
+ 164:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+ 1648               	.LM171:
+ 1649 0848 6696      		adiw r28,22
+ 1650 084a 0FB6      		in __tmp_reg__,__SREG__
+ 1651 084c F894      		cli
+ 1652 084e DEBF      		out __SP_H__,r29
+ 1653 0850 0FBE      		out __SREG__,__tmp_reg__
+ 1654 0852 CDBF      		out __SP_L__,r28
+ 1655 0854 DF91      		pop r29
+ 1656 0856 CF91      		pop r28
+ 1657 0858 1F91      		pop r17
+ 1658 085a 0F91      		pop r16
+ 1659 085c FF90      		pop r15
+ 1660 085e EF90      		pop r14
+ 1661 0860 DF90      		pop r13
+ 1662 0862 0895      		ret
+ 1667               	.Lscope16:
+ 1670               	.global	init_sensor
+ 1672               	init_sensor:
+  15:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void init_sensor(short mode) {
+ 1674               	.LM172:
+ 1675               	.LFBB17:
+ 1676 0864 CF93      		push r28
+ 1677 0866 DF93      		push r29
+ 1678               	/* prologue: function */
+ 1679               	/* frame size = 0 */
+ 1680               	/* stack size = 2 */
+ 1681               	.L__stack_usage = 2
+ 1682 0868 EC01      		movw r28,r24
+  16:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     read_coeffs();
+ 1684               	.LM173:
+ 1685 086a 0E94 0000 		call read_coeffs
+  17:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.mode = mode;
+ 1687               	.LM174:
+ 1688 086e D093 0000 		sts bmp_180+1,r29
+ 1689 0872 C093 0000 		sts bmp_180,r28
+ 1690               	/* epilogue start */
+  18:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** }
+ 1692               	.LM175:
+ 1693 0876 DF91      		pop r29
+ 1694 0878 CF91      		pop r28
+ 1695 087a 0895      		ret
+ 1697               	.Lscope17:
+ 1699               	.global	calculate
+ 1701               	calculate:
+ 165:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** 
+ 166:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c **** void calculate() {
+ 1703               	.LM176:
+ 1704               	.LFBB18:
+ 1705               	/* prologue: function */
+ 1706               	/* frame size = 0 */
+ 1707               	/* stack size = 0 */
+ 1708               	.L__stack_usage = 0
+ 167:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     calculate_temperature();
+ 1710               	.LM177:
+ 1711 087c 0E94 0000 		call calculate_temperature
+ 168:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     calculate_pressure();
+ 1713               	.LM178:
+ 1714 0880 0E94 0000 		call calculate_pressure
+ 169:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     calculate_altitude();
+ 1716               	.LM179:
+ 1717 0884 0C94 0000 		jmp calculate_altitude
+ 1719               	.Lscope18:
+ 1720               		.section	.rodata.str1.1
+ 1721               	.LC9:
+ 1722 0163 5465 6D70 		.string	"Temperature: %.2f C, Pressure: %.2f Pa, Altitude: %.2f m (%2.f ft),\n"
+ 1722      6572 6174 
+ 1722      7572 653A 
+ 1722      2025 2E32 
+ 1722      6620 432C 
+ 1723               		.section	.text.startup,"ax",@progbits
+ 1725               	.global	main
+ 1727               	main:
+ 1729               	.Ltext14:
+   1:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** #include <stdio.h>
+   2:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** #include <avr/io.h>
+   3:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** #include <avr/interrupt.h>
+   4:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** #include <util/delay.h>
+   5:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** #include "bmp180/bmp180.c"
+   6:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** #include "uart.c"
+   7:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** 
+   8:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** 
+   9:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** int main(void) {
+ 1731               	.LM180:
+ 1732               	.LFBB19:
+ 1733               	/* prologue: function */
+ 1734               	/* frame size = 0 */
+ 1735               	/* stack size = 0 */
+ 1736               	.L__stack_usage = 0
+ 1737               	.LBB45:
+ 1738               	.LBB46:
+ 1740               	.Ltext15:
+  20:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** 
+  21:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** static FILE uart_output = FDEV_SETUP_STREAM(send_uart_char, NULL, _FDEV_SETUP_WRITE);
+  22:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** 
+  23:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c **** static void serial_init(void) {
+  24:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     /*
+  25:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****      *
+  26:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****      * Initialize UART,
+  27:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****      * 8 bit frame, 1 Stop Bit
+  28:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****      * No Parity
+  29:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****      */
+  30:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     
+  31:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     UCSR0B = (1 << TXEN0);
+ 1742               	.LM181:
+ 1743 0000 88E0      		ldi r24,lo8(8)
+ 1744 0002 8093 C100 		sts 193,r24
+  32:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     UBRR0L = 51;
+ 1746               	.LM182:
+ 1747 0006 83E3      		ldi r24,lo8(51)
+ 1748 0008 8093 C400 		sts 196,r24
+  33:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+ 1750               	.LM183:
+ 1751 000c 86E0      		ldi r24,lo8(6)
+ 1752 000e 8093 C200 		sts 194,r24
+  34:/Users/atakane/Documents/Electronics/BMP180/BMP180/uart.c ****     stdout = &uart_output;
+ 1754               	.LM184:
+ 1755 0012 80E0      		ldi r24,lo8(uart_output)
+ 1756 0014 90E0      		ldi r25,hi8(uart_output)
+ 1757 0016 9093 0000 		sts __iob+2+1,r25
+ 1758 001a 8093 0000 		sts __iob+2,r24
+ 1759               	.LBE46:
+ 1760               	.LBE45:
+ 1762               	.Ltext16:
+  10:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c ****     
+  11:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c ****     serial_init();
+  12:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c ****     
+  13:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** 	while (1) {
+  14:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c ****         init_sensor(bmp180_mode_0);
+  15:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c ****         calculate();
+  16:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c **** 
+  17:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c ****         printf("Temperature: %.2f C, Pressure: %.2f Pa, Altitude: %.2f m (%2.f ft),\n", (float) bmp
+ 1764               	.LM185:
+ 1765 001e C0E0      		ldi r28,lo8(.LC9)
+ 1766 0020 D0E0      		ldi r29,hi8(.LC9)
+ 1767               	.L89:
+ 1768               	.LBB47:
+ 1769               	.LBB48:
+ 1771               	.Ltext17:
+  16:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     read_coeffs();
+ 1773               	.LM186:
+ 1774 0022 0E94 0000 		call read_coeffs
+  17:/Users/atakane/Documents/Electronics/BMP180/BMP180/bmp180/bmp180.c ****     bmp_180.mode = mode;
+ 1776               	.LM187:
+ 1777 0026 1092 0000 		sts bmp_180+1,__zero_reg__
+ 1778 002a 1092 0000 		sts bmp_180,__zero_reg__
+ 1779               	.LBE48:
+ 1780               	.LBE47:
+ 1782               	.Ltext18:
+  15:/Users/atakane/Documents/Electronics/BMP180/BMP180/main.c ****         calculate();
+ 1784               	.LM188:
+ 1785 002e 0E94 0000 		call calculate
+ 1787               	.LM189:
+ 1788 0032 1091 0000 		lds r17,bmp_180+18
+ 1789 0036 0091 0000 		lds r16,bmp_180+19
+ 1790 003a F090 0000 		lds r15,bmp_180+20
+ 1791 003e E090 0000 		lds r14,bmp_180+21
+ 1792 0042 21EA      		ldi r18,lo8(-95)
+ 1793 0044 38EF      		ldi r19,lo8(-8)
+ 1794 0046 41E5      		ldi r20,lo8(81)
+ 1795 0048 50E4      		ldi r21,lo8(64)
+ 1796 004a D801      		movw r26,r16
+ 1797 004c F701      		movw r30,r14
+ 1798 004e 6B2F      		mov r22,r27
+ 1799 0050 7A2F      		mov r23,r26
+ 1800 0052 8F2F      		mov r24,r31
+ 1801 0054 9E2F      		mov r25,r30
+ 1802 0056 0E94 0000 		call __mulsf3
+ 1803 005a 9F93      		push r25
+ 1804 005c 8F93      		push r24
+ 1805 005e 7F93      		push r23
+ 1806 0060 6F93      		push r22
+ 1807 0062 EF92      		push r14
+ 1808 0064 FF92      		push r15
+ 1809 0066 0F93      		push r16
+ 1810 0068 1F93      		push r17
+ 1811 006a 6091 0000 		lds r22,bmp_180+14
+ 1812 006e 7091 0000 		lds r23,bmp_180+14+1
+ 1813 0072 8091 0000 		lds r24,bmp_180+14+2
+ 1814 0076 9091 0000 		lds r25,bmp_180+14+3
+ 1815 007a 0E94 0000 		call __floatsisf
+ 1816 007e 9F93      		push r25
+ 1817 0080 8F93      		push r24
+ 1818 0082 7F93      		push r23
+ 1819 0084 6F93      		push r22
+ 1820 0086 6091 0000 		lds r22,bmp_180+10
+ 1821 008a 7091 0000 		lds r23,bmp_180+10+1
+ 1822 008e 8091 0000 		lds r24,bmp_180+10+2
+ 1823 0092 9091 0000 		lds r25,bmp_180+10+3
+ 1824 0096 0E94 0000 		call __floatsisf
+ 1825 009a 20E0      		ldi r18,0
+ 1826 009c 30E0      		ldi r19,0
+ 1827 009e 40E2      		ldi r20,lo8(32)
+ 1828 00a0 51E4      		ldi r21,lo8(65)
+ 1829 00a2 0E94 0000 		call __divsf3
+ 1830 00a6 9F93      		push r25
+ 1831 00a8 8F93      		push r24
+ 1832 00aa 7F93      		push r23
+ 1833 00ac 6F93      		push r22
+ 1834 00ae DF93      		push r29
+ 1835 00b0 CF93      		push r28
+ 1836 00b2 0E94 0000 		call printf
+ 1837               	.LBB49:
+ 1838               	.LBB50:
+ 1840               	.Ltext19:
+ 1842               	.LM190:
+ 1843 00b6 9FEF      		ldi r25,lo8(159999)
+ 1844 00b8 20E7      		ldi r18,hi8(159999)
+ 1845 00ba 82E0      		ldi r24,hlo8(159999)
+ 1846 00bc 9150      		1: subi r25,1
+ 1847 00be 2040      		sbci r18,0
+ 1848 00c0 8040      		sbci r24,0
+ 1849 00c2 01F4      		brne 1b
+ 1850 00c4 00C0      		rjmp .
+ 1851 00c6 0000      		nop
+ 1852 00c8 8DB7      		in r24,__SP_L__
+ 1853 00ca 9EB7      		in r25,__SP_H__
+ 1854 00cc 4296      		adiw r24,18
+ 1855 00ce 0FB6      		in __tmp_reg__,__SREG__
+ 1856 00d0 F894      		cli
+ 1857 00d2 9EBF      		out __SP_H__,r25
+ 1858 00d4 0FBE      		out __SREG__,__tmp_reg__
+ 1859 00d6 8DBF      		out __SP_L__,r24
+ 1860 00d8 00C0      		rjmp .L89
+ 1861               	.LBE50:
+ 1862               	.LBE49:
+ 1864               	.Lscope19:
+ 1865               		.data
+ 1868               	uart_output:
+ 1869 0000 0000 00   		.zero	3
+ 1870 0003 02        		.byte	2
+ 1871 0004 0000 0000 		.zero	4
+ 1872 0008 0000      		.word	gs(send_uart_char)
+ 1873 000a 0000      		.word	0
+ 1874 000c 0000      		.word	0
+ 1875               		.comm	bmp_180,48,1
+ 1876               	.global	i2cdebug
+ 1877               		.section .bss
+ 1880               	i2cdebug:
+ 1881 0000 00        		.zero	1
+ 1882               	.global	pressure_sea_level
+ 1883               		.section	.rodata
+ 1886               	pressure_sea_level:
+ 1887 0000 CD        		.byte	-51
+ 1888 0001 8B        		.byte	-117
+ 1889 0002 01        		.byte	1
+ 1890 0003 00        		.byte	0
+ 1891               	.global	bmp180_coeff_addr
+ 1894               	bmp180_coeff_addr:
+ 1895 0004 ABAA      		.word	-21845
+ 1896 0006 ADAC      		.word	-21331
+ 1897 0008 AFAE      		.word	-20817
+ 1898 000a B1B0      		.word	-20303
+ 1899 000c B3B2      		.word	-19789
+ 1900 000e B5B4      		.word	-19275
+ 1901 0010 B7B6      		.word	-18761
+ 1902 0012 B9B8      		.word	-18247
+ 1903 0014 BBBA      		.word	-17733
+ 1904 0016 BDBC      		.word	-17219
+ 1905 0018 BFBE      		.word	-16705
+ 1911               		.text
+ 1913               	.Letext0:
+ 1914               		.ident	"GCC: (GNU) 4.8.1"
+ 1915               	.global __do_copy_data
+ 1916               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:2      *ABS*:0000003e __SP_H__
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:3      *ABS*:0000003d __SP_L__
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:4      *ABS*:0000003f __SREG__
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:5      *ABS*:00000000 __tmp_reg__
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:6      *ABS*:00000001 __zero_reg__
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:119    .text:00000000 send_uart_char
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:158    .text:0000001e init_twi
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:187    .text:0000002a start_transmission
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1880   .bss:00000000 i2cdebug
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:243    .text:00000064 end_transmission
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:279    .text:0000007c send_addr
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:359    .text:000000d4 send_data
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:444    .text:00000132 read_data
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:520    .text:0000018c restart
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:554    .text:000001a6 debug
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:571    .text:000001ac terminate
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:589    .text:000001ae calculate_altitude
+                            *COM*:00000030 bmp_180
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:638    .text:00000208 read_temperature
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:741    .text:00000280 calculate_temperature
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:865    .text:00000374 read_pressure
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1100   .text:0000048e calculate_pressure
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1490   .text:00000744 read_coeffs
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1894   .rodata:00000004 bmp180_coeff_addr
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1672   .text:00000864 init_sensor
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1701   .text:0000087c calculate
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1727   .text.startup:00000000 main
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1868   .data:00000000 uart_output
+/var/folders/2t/x0mw6nss4_z3npyvmny7gnnm0000gn/T//ccGEasUZ.s:1886   .rodata:00000000 pressure_sea_level
+
+UNDEFINED SYMBOLS
+puts
+printf
+__floatsisf
+__divsf3
+__subsf3
+__mulsf3
+pow
+__fixsfsi
+__muluhisi3
+__mulsi3
+__mulshisi3
+__divmodsi4
+__udivmodsi4
+__mulohisi3
+__iob
+__do_copy_data
+__do_clear_bss
