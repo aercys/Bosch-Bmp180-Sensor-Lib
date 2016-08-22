@@ -19,6 +19,7 @@ void init_sensor(short mode) {
 
 void calculate_temperature() {
     long UT, X1, X2, B5;
+    
     UT = read_temperature();
     X1 = (UT - bmp_180.calib_coeffs.AC6) * bmp_180.calib_coeffs.AC5 / pow(2, 15);
     X2 = bmp_180.calib_coeffs.MC * pow(2, 11) / (X1 + bmp_180.calib_coeffs.MD);
@@ -30,6 +31,7 @@ void calculate_temperature() {
 void calculate_pressure() {
     long UP, X1, X2, X3, B3, B6, _pressure;
     unsigned long B4, B7;
+    
     UP = read_pressure();
     B6 = bmp_180.calib_coeffs.B5 - 4000;
     X1 = (bmp_180.calib_coeffs.B2 * (B6 * B6 >> 12)) >> 11;
@@ -81,7 +83,7 @@ long read_temperature() {
 long read_pressure() {
     long UP;
     uint8_t msb, lsb, xlsb;
-    //uint32_t buffer;
+    
     start_transmission();
     send_addr(bmp180_write_addr);
     send_data(control_reg_addr);
