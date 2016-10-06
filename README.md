@@ -6,7 +6,6 @@ The library provides proper communication between AVR Based microcontrollers and
 ```C
 
 #include "bmp180/bmp180.c"
-#include "uart.c"
 
 /**
 * There are 3 modes of operation 
